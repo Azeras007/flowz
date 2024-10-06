@@ -2,27 +2,30 @@ name: Sync Repo
 
 on:
   push:
-    branches:
-      - main
+    branches-ignore:
+      - ga-ignore-*
+  pull_request:
+    branches-ignore:
+      - ga-ignore-*
+
+env:
+  MIRROR_URL: git@github.com:Azeras007/flowz.git
 
 jobs:
-  sync:
+
+  push_to_mirror:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout mobile repo
-      uses: actions/checkout@v2
-      with:
-        repository: Azeras007/flowz
+      - name: Checkout code from Epitech org repo
+        uses: actions/checkout@v3
+        with:
+          repository: EpitechPromo2027/B-DEV-500-MPL-5-1-area-elliot.feuilllade
 
-    - name: Add organization repo as remote
-      run: git remote add upstream https://github.com/EpitechPromo2027/B-DEV-500-MPL-5-1-area-elliot.feuilllade/tree/main/client_mobile
-      
-    - name: Fetch changes from upstream
-      run: git fetch upstream
-
-    - name: Merge changes from upstream
-      run: git merge upstream/main --allow-unrelated-histories
+      - name: Push to public repository
+        uses: pixta-dev/repository-mirroring-action@v1
+        with:
+          target_repo_url: ${{ env.MIRROR_URL }}
+          ssh_private_key: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
 
     - name: Push changes to mobile repo
       run: |
