@@ -12,7 +12,6 @@ env:
   MIRROR_URL: git@github.com:Azeras007/flowz.git
 
 jobs:
-
   push_to_mirror:
     runs-on: ubuntu-latest
     steps:
