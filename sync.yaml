@@ -3,7 +3,7 @@ name: Sync Repo
 on:
   push:
     branches:
-      - main  # Déclencher le workflow à chaque commit poussé sur la branche 'main'
+      - main
 
 jobs:
   sync:
@@ -13,11 +13,11 @@ jobs:
     - name: Checkout mobile repo
       uses: actions/checkout@v2
       with:
-        repository: Azeras007/flowz  # Remplacer par le dépôt mobile
+        repository: Azeras007/flowz
 
     - name: Add organization repo as remote
-      run: git remote add upstream https://github.com/EpitechPromo2027/B-DEV-500-MPL-5-1-area-elliot.feuilllade/tree/main/client_mobile  # Remplacer par le dépôt de l'organisation
-
+      run: git remote add upstream https://github.com/EpitechPromo2027/B-DEV-500-MPL-5-1-area-elliot.feuilllade/tree/main/client_mobile
+      
     - name: Fetch changes from upstream
       run: git fetch upstream
 
