@@ -2,20 +2,17 @@ import Foundation
 import Security
 
 struct KeychainHelper {
-    // Save token to keychain
     static func saveToken(_ token: String) {
         guard let data = token.data(using: .utf8) else { return }
         
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: "authToken", // Identifier for the token
+            kSecAttrAccount as String: "authToken",
             kSecValueData as String: data
         ]
         
-        // Delete any existing token before saving a new one
         SecItemDelete(query as CFDictionary)
         
-        // Add new token to keychain
         let status = SecItemAdd(query as CFDictionary, nil)
         
         if status == errSecSuccess {
@@ -25,7 +22,6 @@ struct KeychainHelper {
         }
     }
     
-    // Retrieve token from keychain
     static func getToken() -> String? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -45,7 +41,6 @@ struct KeychainHelper {
         }
     }
     
-    // Delete token from keychain
     static func deleteToken() {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,

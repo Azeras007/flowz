@@ -5,7 +5,7 @@ struct AppSelectionView: View {
     @State private var subServices: [SubService] = []
     @State private var selectedApps: [Int: Bool] = [:]
     @Binding var isAppSelection: Bool
-    
+
     var body: some View {
         VStack(spacing: 30) {
             Spacer()
@@ -14,7 +14,7 @@ struct AppSelectionView: View {
                 .fontWeight(.semibold)
                 .foregroundColor(.white)
                 .padding(.top, 40)
-            
+
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 20), count: 3), spacing: 20) {
                 ForEach(subServices) { subService in
                     AppIconView(appName: subService.name, iconURL: subService.icon_url, isSelected: selectedApps[subService.id] ?? false)
@@ -31,21 +31,20 @@ struct AppSelectionView: View {
                 }
             }
             .padding(.horizontal, 30)
-            
+
             Spacer()
-            
+
             HStack {
                 Button(action: {
-                    
                 }) {
                     Text("Skip")
                         .foregroundColor(.white)
                         .underline()
                 }
                 .padding(.leading, 20)
-                
+
                 Spacer()
-                
+
                 Button(action: {
                     saveSelectedApps()
                     isAppSelection = true
@@ -64,18 +63,19 @@ struct AppSelectionView: View {
         .background(Color(.systemGray6).opacity(0.95))
         .edgesIgnoringSafeArea(.all)
         .onAppear {
-            fetchSubServices()
+            AppSelectionView.fetchSubServices { fetchedSubServices in
+                self.subServices = fetchedSubServices
+            }
             loadSelectedApps()
         }
     }
-    
-    private func fetchSubServices() {
+
+    static func fetchSubServices(completion: @escaping ([SubService]) -> Void) {
         let token = KeychainHelper.getToken() ?? ""
         let headers: HTTPHeaders = [
             "Authorization": "Bearer \(token)"
         ]
-        
-        // Fetch sub-services using Alamofire
+
         AF.request("https://area-development.tech/api/sub-services", headers: headers).responseJSON { response in
             switch response.result {
             case .success(let value):
@@ -83,17 +83,21 @@ struct AppSelectionView: View {
                 if let data = response.data {
                     do {
                         let decodedResponse = try JSONDecoder().decode(SubServiceResponse.self, from: data)
-                        self.subServices = decodedResponse.data
+                        DispatchQueue.main.async {
+                            completion(decodedResponse.data)
+                        }
                     } catch {
                         print("Decoding error: \(error)")
+                        completion([])
                     }
                 }
             case .failure(let error):
                 print("Error fetching sub-services: \(error)")
+                completion([])
             }
         }
     }
-    
+
     private func toggleSelection(for subService: SubService) {
         if selectedApps[subService.id] == true {
             selectedApps[subService.id] = false
@@ -109,7 +113,7 @@ struct AppSelectionView: View {
         let headers: HTTPHeaders = [
             "Authorization": "Bearer \(token)"
         ]
-        
+
         AF.request("https://area-development.tech/api/sub-services/\(subServiceId)/favorite", method: .post, headers: headers).response { response in
             switch response.result {
             case .success:
@@ -119,13 +123,13 @@ struct AppSelectionView: View {
             }
         }
     }
-    
+
     private func unfavoriteSubService(_ subServiceId: Int) {
         let token = KeychainHelper.getToken() ?? ""
         let headers: HTTPHeaders = [
             "Authorization": "Bearer \(token)"
         ]
-        
+
         AF.request("https://area-development.tech/api/sub-services/\(subServiceId)/unfavorite", method: .delete, headers: headers).response { response in
             switch response.result {
             case .success:
@@ -135,14 +139,14 @@ struct AppSelectionView: View {
             }
         }
     }
-    
+
     private func saveSelectedApps() {
         let selectedAppIds = selectedApps.filter { $0.value }.map { $0.key }
         UserDefaults.standard.set(selectedAppIds, forKey: "selectedApps")
         print("Selected apps saved: \(selectedAppIds)")
     }
-    
-    private func loadSelectedApps() {
+
+    func loadSelectedApps() {
         if let savedApps = UserDefaults.standard.array(forKey: "selectedApps") as? [Int] {
             for appId in savedApps {
                 selectedApps[appId] = true
@@ -155,13 +159,13 @@ struct AppIconView: View {
     var appName: String
     var iconURL: String
     var isSelected: Bool
-    
+
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 15)
                 .fill(Color.gray.opacity(0.3))
-                .frame(width: isSelected ? 90 : 80, height: isSelected ? 90 : 80) // Enlarge if selected
-            
+                .frame(width: isSelected ? 90 : 80, height: isSelected ? 90 : 80)
+
             AsyncImage(url: URL(string: iconURL)) { image in
                 image.resizable()
                     .aspectRatio(contentMode: .fit)
@@ -177,7 +181,7 @@ struct AppIconView: View {
                 .frame(width: 50, height: 50)
             }
         }
-        .animation(.easeInOut(duration: 0.2)) // Animation for enlargement effect
+        .animation(.easeInOut(duration: 0.2))
     }
 }
 
@@ -189,4 +193,5 @@ struct SubService: Identifiable, Decodable {
     var id: Int
     var name: String
     var icon_url: String
+    var service_id: Int
 }
