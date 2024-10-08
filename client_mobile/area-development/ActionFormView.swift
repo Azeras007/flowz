@@ -44,7 +44,7 @@ struct ActionFormView: View {
             .padding(.horizontal)
             .padding(.top, 20)
             
-            NavigationLink(destination: SubServicesTriggerView(actionFormData: savedFormData), isActive: $shouldNavigate) {
+            NavigationLink(destination: SubServicesTriggerView(actionFormData: savedFormData, action: action), isActive: $shouldNavigate) {
                 EmptyView()
             }
             

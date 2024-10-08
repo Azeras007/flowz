@@ -1,11 +1,3 @@
-//
-//  TriggerFormData.swift
-//  area-development
-//
-//  Created by Antoine Laurans on 07/10/2024.
-//
-
-
 import SwiftUI
 
 struct TriggerFormData {
@@ -15,9 +7,11 @@ struct TriggerFormData {
 struct TriggerFormView: View {
     var trigger: Trigger
     var actionFormData: FormData
+    var action: Action
     @State private var formData: [String: String] = [:]
     @State private var savedFormData: TriggerFormData?
     @State private var name: String = ""
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Remplissez les champs pour \(trigger.name)")
@@ -26,22 +20,17 @@ struct TriggerFormView: View {
                 .padding(.top, 20)
             
             Form {
-                TextField("Name", text: $name)
+                TextField("Name de l'Area", text: $name)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
-                ForEach(trigger.metadataFields , id: \.name) { field in
-                    if field.type == "text" {
-                        TextField(field.label, text: Binding(
-                            get: { formData[field.name] ?? "" },
-                            set: { formData[field.name] = $0 }
-                        ))
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    }
-                    if field.type == "string"{
-                        TextField(field.label, text: Binding(
-                            get: { formData[field.name] ?? "" },
-                            set: { formData[field.name] = $0 }
-                        ))
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                if (!trigger.metadataFields.isEmpty) {
+                    ForEach(trigger.metadataFields, id: \.name) { field in
+                        if field.type == "text" || field.type == "string" {
+                            TextField(field.label, text: Binding(
+                                get: { formData[field.name] ?? "" },
+                                set: { formData[field.name] = $0 }
+                            ))
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                        }
                     }
                 }
             }
@@ -49,7 +38,8 @@ struct TriggerFormView: View {
             
             Button(action: {
                 saveFormData()
-                createArea(name: name, trigger: trigger, actionFormData: actionFormData, triggerFormData: savedFormData)
+                createArea(name: name, trigger: trigger, action: action,actionFormData: actionFormData, triggerFormData: savedFormData)
+                DashboardView()
             }) {
                 Text("Submit")
                     .padding()

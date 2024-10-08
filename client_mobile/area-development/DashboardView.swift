@@ -23,6 +23,14 @@ struct DashboardView: View {
                             .cornerRadius(8)
                             .padding(.top, 20)
                     }
+                    NavigationLink(destination: AreaListView()) {
+                        Text("List Area")
+                            .foregroundColor(.white)
+                            .padding(10)
+                            .background(Color.yellow)
+                            .cornerRadius(8)
+                            .padding(.top, 20)
+                    }
                 }
                 .padding(.horizontal)
 

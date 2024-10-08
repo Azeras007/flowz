@@ -7,37 +7,82 @@
 
 import XCTest
 
-final class area_developmentUITests: XCTestCase {
+class area_developmentUITests: XCTestCase {
+
+    var app: XCUIApplication!
 
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-
-        // In UI tests it is usually best to stop immediately when a failure occurs.
+        // Initialisation de l'application avant chaque test
         continueAfterFailure = false
-
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
+        app = XCUIApplication()
+        app.launch()
     }
 
     override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        // Méthode exécutée après chaque test, pour nettoyage
+        app = nil
     }
 
-    @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
-        let app = XCUIApplication()
-        app.launch()
+    // Test de la navigation vers les logs d'une Area
+    func testNavigationToAreaLogs() throws {
+        // Vérifier que nous sommes sur l'écran des "Areas"
+        XCTAssertTrue(app.staticTexts["Your Areas"].exists, "The Areas screen should be displayed")
 
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        // Assurez-vous qu'au moins une area existe pour naviguer
+        let firstArea = app.buttons.element(boundBy: 0)
+        XCTAssertTrue(firstArea.exists, "An area should be present")
+        
+        // Taper sur l'area pour naviguer vers les logs
+        firstArea.tap()
+
+        // Vérifier que la vue de logs est affichée après la navigation
+        XCTAssertTrue(app.staticTexts["Logs"].exists, "The Logs screen should be displayed")
     }
 
-    @MainActor
-    func testLaunchPerformance() throws {
-        if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {
-            // This measures how long it takes to launch your application.
-            measure(metrics: [XCTApplicationLaunchMetric()]) {
-                XCUIApplication().launch()
-            }
-        }
+    // Test de suppression d'une Area
+    func testDeleteArea() throws {
+        // Assurez-vous qu'une area existe pour suppression
+        let firstArea = app.buttons.element(boundBy: 0)
+        XCTAssertTrue(firstArea.exists, "An area should be present for deletion")
+        
+        // Taper sur l'icône de la poubelle (suppression)
+        let deleteButton = firstArea.buttons["trash"]
+        XCTAssertTrue(deleteButton.exists, "The delete button should be present")
+        deleteButton.tap()
+        
+        // Vérifier qu'un alert de confirmation s'affiche
+        let confirmDeleteAlert = app.alerts["Delete Area"]
+        XCTAssertTrue(confirmDeleteAlert.exists, "The delete confirmation alert should appear")
+        
+        // Taper sur le bouton "OK" pour confirmer la suppression
+        confirmDeleteAlert.buttons["OK"].tap()
+        
+        // Vérifier que l'area a été supprimée
+        XCTAssertFalse(firstArea.exists, "The area should be deleted")
+    }
+
+    // Test d'ajout d'un Trigger
+    func testAddTrigger() throws {
+        // Vérifier que nous sommes sur l'écran des "Areas"
+        XCTAssertTrue(app.staticTexts["Your Areas"].exists, "The Areas screen should be displayed")
+        
+        // Assurez-vous qu'au moins une area existe pour ajouter un trigger
+        let firstArea = app.buttons.element(boundBy: 0)
+        XCTAssertTrue(firstArea.exists, "An area should be present")
+        
+        // Taper sur l'emoji ⚡ pour ajouter un trigger
+        let triggerButton = firstArea.buttons["⚡"]
+        XCTAssertTrue(triggerButton.exists, "The trigger button should be present")
+        triggerButton.tap()
+
+        // Vérifier que le trigger a été activé ou que la vue pour l'ajout de trigger est visible
+        // Si vous avez une alerte ou un message de succès, vérifiez-le ici
+        XCTAssertTrue(app.staticTexts["Trigger added"].exists, "The Trigger added confirmation should appear")
+    }
+
+    // Test de lancement de l'application
+    func testLaunch() throws {
+        // Vérifier que l'application se lance avec l'écran "Areas"
+        XCTAssertTrue(app.staticTexts["Your Areas"].exists, "The Areas screen should be displayed at launch")
     }
 }

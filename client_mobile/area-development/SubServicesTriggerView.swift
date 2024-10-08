@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SubServicesTriggerView: View {
     var actionFormData: FormData
+    var action: Action
     @State private var searchText = ""
     @State private var subServices: [SubService] = []
     @State private var isLoading = true
@@ -29,7 +30,7 @@ struct SubServicesTriggerView: View {
                 } else {
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
                         ForEach(filteredServices) { subService in
-                            NavigationLink(destination: TriggerSelectionView(serviceId: subService.service_id, subServiceId: subService.id, actionFormData: actionFormData)) {
+                            NavigationLink(destination: TriggerSelectionView(serviceId: subService.service_id, subServiceId: subService.id, actionFormData: actionFormData, action: action)) {
                                 ServiceItemView(serviceName: subService.name)
                             }
                         }

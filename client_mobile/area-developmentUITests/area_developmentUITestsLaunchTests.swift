@@ -7,26 +7,66 @@
 
 import XCTest
 
-final class area_developmentUITestsLaunchTests: XCTestCase {
+class area_developmentUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true
     }
 
     override func setUpWithError() throws {
+        // Initialiser avant chaque test
         continueAfterFailure = false
     }
 
-    @MainActor
+    // Test de lancement de l'application
     func testLaunch() throws {
         let app = XCUIApplication()
         app.launch()
 
-        // Insert steps here to perform after app launch but before taking a screenshot,
-        // such as logging into a test account or navigating somewhere in the app
-
-        let attachment = XCTAttachment(screenshot: app.screenshot())
+        // Prendre une capture d'écran du lancement
+        let screenshot = app.screenshot()
+        let attachment = XCTAttachment(screenshot: screenshot)
         attachment.name = "Launch Screen"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+
+        // Vérifier que l'écran "Your Areas" est bien affiché au lancement
+        XCTAssertTrue(app.staticTexts["Your Areas"].exists, "The Areas screen should be displayed at launch")
+    }
+
+    // Test de lancement avec connexion utilisateur
+    func testLaunchWithLogin() throws {
+        let app = XCUIApplication()
+        app.launch()
+
+        // Simuler un processus de connexion ici si nécessaire
+        let loginButton = app.buttons["Login"]
+        if loginButton.exists {
+            loginButton.tap()
+            
+            // Simuler la saisie des informations de connexion
+            let emailField = app.textFields["Email"]
+            XCTAssertTrue(emailField.exists, "The email field should be present")
+            emailField.tap()
+            emailField.typeText("test@example.com")
+
+            let passwordField = app.secureTextFields["Password"]
+            XCTAssertTrue(passwordField.exists, "The password field should be present")
+            passwordField.tap()
+            passwordField.typeText("password123")
+
+            let submitButton = app.buttons["Submit"]
+            XCTAssertTrue(submitButton.exists, "The submit button should be present")
+            submitButton.tap()
+        }
+
+        // Vérifier que l'écran principal s'affiche après la connexion
+        XCTAssertTrue(app.staticTexts["Your Areas"].exists, "The Areas screen should be displayed after login")
+
+        // Capture d'écran de l'écran après la connexion
+        let screenshot = app.screenshot()
+        let attachment = XCTAttachment(screenshot: screenshot)
+        attachment.name = "Login Screen"
         attachment.lifetime = .keepAlways
         add(attachment)
     }
