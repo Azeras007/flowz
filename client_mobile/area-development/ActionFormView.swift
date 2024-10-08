@@ -9,13 +9,35 @@ struct ActionFormView: View {
     @State private var formData: [String: String] = [:]
     @State private var savedFormData: FormData = FormData(fields: [:])
     @State private var shouldNavigate = false
+    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Remplissez les champs pour \(action.name)")
-                .font(.title)
-                .fontWeight(.bold)
-                .padding(.top, 20)
+            // Title and Back Button
+            ZStack {
+                Text("Fill in the fields")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .foregroundColor(colorScheme == .dark ? Color.white : Color.primary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+
+                HStack {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Image(systemName: "arrowtriangle.left.fill")
+                            .resizable()
+                            .frame(width: 25, height: 25)
+                            .foregroundColor(colorScheme == .dark ? Color.white : Color.primary)
+                    }
+                    .padding(.leading, 20)
+
+                    Spacer()
+                }
+            }
+            .padding(.top, 40)
+            .navigationBarHidden(true)
             
             Form {
                 ForEach(action.metadata.fields, id: \.name) { field in
@@ -37,8 +59,9 @@ struct ActionFormView: View {
                 Text("Submit")
                     .padding()
                     .frame(maxWidth: .infinity)
-                    .background(Color.blue)
-                    .foregroundColor(.white)
+                    .background(Color.yellow)
+                    .fontWeight(.bold)
+                    .foregroundColor(.black)
                     .cornerRadius(10)
             }
             .padding(.horizontal)

@@ -47,7 +47,8 @@ struct AppSelectionView: View {
 
                 Button(action: {
                     saveSelectedApps()
-                    isAppSelection = true
+                    UserDefaults.standard.set(true, forKey: "hasCompletedAppSelection")
+                    isAppSelection = false
                 }) {
                     Text("Finish setup")
                         .padding()
@@ -194,4 +195,6 @@ struct SubService: Identifiable, Decodable {
     var name: String
     var icon_url: String
     var service_id: Int
+    var description: String
 }
+

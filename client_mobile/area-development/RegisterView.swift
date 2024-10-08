@@ -12,11 +12,11 @@ struct RegisterView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            Image(systemName: "wave.3.forward.circle.fill")
+            Image("logo")
                 .resizable()
-                .frame(width: 50, height: 50)
+                .frame(width: 80, height: 80)
                 .foregroundColor(.blue)
-                .padding(.bottom, 40)
+                .padding(.bottom, 35)
             
             Text("Create your account")
                 .font(.title)
@@ -70,8 +70,8 @@ struct RegisterView: View {
                 Text("Sign up")
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
+                    .background(Color.yellow)
+                    .foregroundColor(.black)
                     .cornerRadius(10)
                     .padding(.horizontal)
             }

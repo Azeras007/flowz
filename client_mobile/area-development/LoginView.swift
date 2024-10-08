@@ -14,9 +14,9 @@ struct LoginView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            Image(systemName: "wave.3.forward.circle.fill")
+            Image("logo")
                 .resizable()
-                .frame(width: 50, height: 50)
+                .frame(width: 100, height: 100)
                 .foregroundColor(.blue)
                 .padding(.bottom, 40)
             

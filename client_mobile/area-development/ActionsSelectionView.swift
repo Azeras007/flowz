@@ -2,49 +2,108 @@ import SwiftUI
 import Alamofire
 
 struct ActionsSelectionView: View {
-    var serviceId: Int
-    var subServiceId: Int
+    var subService: SubService
     @State private var actions: [Action] = []
     @State private var isLoading = true
-    
+    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.colorScheme) var colorScheme
+
     var body: some View {
         VStack {
-            Text("Choose an action")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .padding(.top, 20)
-            
+            ZStack {
+                RoundedRectangle(cornerRadius: 50)
+                    .fill(Color.white)
+                    .shadow(color: Color.black.opacity(0.4), radius: 2, x: 0, y: 12)
+                    .edgesIgnoringSafeArea(.top)
+                    .frame(maxWidth: .infinity, minHeight: 380)
+                
+                VStack {
+                    ZStack {
+                        Text("Choose an action")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .foregroundColor(colorScheme == .dark ? Color.white : Color.primary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+
+                        HStack {
+                            Button(action: {
+                                presentationMode.wrappedValue.dismiss()
+                            }) {
+                                Image(systemName: "arrowtriangle.left.fill")
+                                    .resizable()
+                                    .frame(width: 25, height: 25)
+                                    .foregroundColor(colorScheme == .dark ? Color.white : Color.primary)
+                            }
+                            .padding(.leading, 20)
+
+                            Spacer()
+                        }
+                    }
+                    .padding(.top, 40)
+                    .navigationBarHidden(true)
+
+                    if let url = URL(string: subService.icon_url) {
+                        AsyncImage(url: url) { image in
+                            image.resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 100, height: 100)
+                        } placeholder: {
+                            Image(systemName: "questionmark.circle")
+                                .resizable()
+                                .frame(width: 100, height: 100)
+                        }
+                        .padding(.top, 20)
+                    }
+
+                    Text(subService.description)
+                        .font(.body)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 10)
+                        .multilineTextAlignment(.center)
+                }
+            }
+
+            Spacer().frame(height: 25)
+
             ScrollView {
                 if isLoading {
-                    ProgressView("Loading actions...")
-                        .padding(.top, 20)
+                    LoadingView()
                 } else {
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
+                    LazyVGrid(columns: [GridItem(.flexible())], spacing: 20) {
                         ForEach(actions) { action in
                             NavigationLink(destination: ActionFormView(action: action)) {
-                                ActionItemView(action: action)
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color.yellow)
+                                    .shadow(radius: 2)
+                                    .frame(height: 70)
+                                    .overlay(
+                                        Text(action.name)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.black)
+                                    )
                             }
+                            .buttonStyle(PlainButtonStyle())
                         }
                     }
                     .padding(.horizontal, 20)
-                    .padding(.top, 20)
+                    .padding(.top, 35)
                 }
             }
-            
+
             Spacer()
         }
-        .background(Color(.systemBlue).edgesIgnoringSafeArea(.all))
+        .background(Color.white.edgesIgnoringSafeArea(.all))
         .onAppear {
-            fetchActions(serviceId: serviceId, subServiceId: subServiceId)
+            fetchActions(serviceId: subService.service_id, subServiceId: subService.id)
         }
     }
-    
+
     func fetchActions(serviceId: Int, subServiceId: Int) {
         let token = KeychainHelper.getToken() ?? ""
         let headers: HTTPHeaders = [
             "Authorization": "Bearer \(token)"
         ]
-        
+
         let url = "https://area-development.tech/api/services/\(serviceId)/sub-services/\(subServiceId)/actions"
         AF.request(url, headers: headers).responseJSON { response in
             switch response.result {
@@ -70,41 +129,6 @@ struct ActionsSelectionView: View {
     }
 }
 
-struct ActionItemView: View {
-    var action: Action
-    
-    var body: some View {
-        VStack {
-            if let url = URL(string: action.icon_url) {
-                AsyncImage(url: url) { image in
-                    image.resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 50, height: 50)
-                } placeholder: {
-                    Image(systemName: "questionmark.circle")
-                        .resizable()
-                        .frame(width: 50, height: 50)
-                }
-            }
-            
-            Text(action.name)
-                .fontWeight(.bold)
-                .foregroundColor(.black)
-            
-            ForEach(action.metadata.fields, id: \.name) { field in
-                VStack(alignment: .leading) {
-                    Text("\(field.label): \(field.type)")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                }
-            }
-        }
-        .padding(10)
-        .background(Color.white)
-        .cornerRadius(12)
-        .shadow(radius: 4)
-    }
-}
 
 struct Action: Identifiable, Decodable {
     var id: Int
