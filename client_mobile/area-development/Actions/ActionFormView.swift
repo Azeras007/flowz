@@ -14,7 +14,6 @@ struct ActionFormView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            // Title and Back Button
             ZStack {
                 Text("Fill in the fields")
                     .font(.largeTitle)

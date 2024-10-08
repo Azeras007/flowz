@@ -1,9 +1,5 @@
 import SwiftUI
 
-struct TriggerFormData {
-    var fields: [String: String]
-}
-
 struct TriggerFormView: View {
     var trigger: Trigger
     var actionFormData: FormData
