@@ -39,7 +39,35 @@ struct LoginView: View {
                 .background(Color(.systemGray6))
                 .cornerRadius(10)
                 .padding(.horizontal)
-            
+
+            // add simple login button
+            Button(action: {
+                AF.request("https://area-development.tech/api/auth/login", method: .post, parameters: ["email": email, "password": password], encoding: JSONEncoding.default)
+                    .validate(statusCode: 200..<300)
+                    .responseJSON { response in
+                        switch response.result {
+                        case .success(let value):
+                            print("Login successful. Response: \(value)")
+                            if let token = (value as? [String: Any])?["token"] as? String {
+                                KeychainHelper.saveToken(token)
+                                isUserLoggedIn = true
+                            } else {
+                                errorMessage = "Failed to retrieve token."
+                            }
+                        case .failure(let error):
+                            print("Failed to log in: \(error)")
+                            errorMessage = "Failed to log in: \(error.localizedDescription)"
+                        }
+                    }
+            }) {
+                Text("Sign in")
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
+
             SignInWithAppleButton(
                 .signIn,
                 onRequest: { request in
