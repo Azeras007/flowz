@@ -73,7 +73,7 @@ struct TriggerSelectionView: View {
                 } else {
                     LazyVGrid(columns: [GridItem(.flexible())], spacing: 20) {
                         ForEach(triggers) { trigger in
-                            NavigationLink(destination: TriggerFormView(trigger: trigger, actionFormData: actionFormData)) {
+                            NavigationLink(destination: TriggerFormView(trigger: trigger, actionFormData: actionFormData, action: action)) {
                                 RoundedRectangle(cornerRadius: 12)
                                     .fill(Color.yellow)
                                     .shadow(radius: 2)
@@ -148,7 +148,7 @@ struct TriggerItemView: View {
                         .frame(width: 50, height: 50)
                 }
             }
-            
+
             Text(trigger.name)
                 .fontWeight(.bold)
                 .foregroundColor(.black)

@@ -61,7 +61,6 @@ struct TriggerFormView: View {
             Button(action: {
                 saveFormData()
                 createArea(name: name, trigger: trigger, action: action,actionFormData: actionFormData, triggerFormData: savedFormData)
-                DashboardView()
             }) {
                 Text("Submit")
                     .padding()

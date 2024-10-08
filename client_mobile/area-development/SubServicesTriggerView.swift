@@ -82,7 +82,7 @@ struct SubServicesTriggerView: View {
                 } else {
                     LazyVGrid(columns: [GridItem(.flexible(), spacing: 20), GridItem(.flexible(), spacing: 20)], spacing: 20) {
                         ForEach(filteredServices) { subService in
-                            SubServiceGridItem(subService: subService, actionFormData: actionFormData)
+                            SubServiceGridItem(subService: subService, actionFormData: actionFormData, action: action)
                         }
                     }
                     .padding(.horizontal, 20)
@@ -111,10 +111,11 @@ struct SubServicesTriggerView: View {
 struct SubServiceGridItem: View {
     var subService: SubService
     var actionFormData: FormData
+    var action: Action
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        NavigationLink(destination: TriggerSelectionView(subService: subService, actionFormData: actionFormData)) {
+        NavigationLink(destination: TriggerSelectionView(subService: subService, actionFormData: actionFormData, action: action)) {
             VStack {
                 AsyncImage(url: URL(string: subService.icon_url)) { image in
                     image.resizable()
