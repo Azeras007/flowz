@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1BB172FE2CAB4C3700C0C89D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 1BB172FD2CAB4C3700C0C89D /* Alamofire */; };
+		8F5480232CB4770600066EF2 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 8F5480222CB4770600066EF2 /* Lottie */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,24 @@
 			);
 			target = 1BB172892CAAFA9B00C0C89D /* area-development */;
 		};
+		8F547FE72CB474C200066EF2 /* Exceptions for "area-development" folder in "area-developmentTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				loading.json,
+				LoadingView.swift,
+				LottieView.swift,
+			);
+			target = 1BB1729A2CAAFA9C00C0C89D /* area-developmentTests */;
+		};
+		8F547FE82CB474C200066EF2 /* Exceptions for "area-development" folder in "area-developmentUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				loading.json,
+				LoadingView.swift,
+				LottieView.swift,
+			);
+			target = 1BB172A42CAAFA9C00C0C89D /* area-developmentUITests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -61,6 +80,8 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				1BB173082CAC196900C0C89D /* Exceptions for "area-development" folder in "area-development" target */,
+				8F547FE72CB474C200066EF2 /* Exceptions for "area-development" folder in "area-developmentTests" target */,
+				8F547FE82CB474C200066EF2 /* Exceptions for "area-development" folder in "area-developmentUITests" target */,
 			);
 			path = "area-development";
 			sourceTree = "<group>";
@@ -83,6 +104,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1BB172FE2CAB4C3700C0C89D /* Alamofire in Frameworks */,
+				8F5480232CB4770600066EF2 /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -153,6 +175,7 @@
 			name = "area-development";
 			packageProductDependencies = (
 				1BB172FD2CAB4C3700C0C89D /* Alamofire */,
+				8F5480222CB4770600066EF2 /* Lottie */,
 			);
 			productName = "area-development";
 			productReference = 1BB1728A2CAAFA9B00C0C89D /* area-development.app */;
@@ -238,6 +261,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				1BB172FB2CAB4A8600C0C89D /* XCRemoteSwiftPackageReference "Alamofire" */,
+				8F5480212CB4770600066EF2 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1BB1728B2CAAFA9B00C0C89D /* Products */;
@@ -436,7 +460,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "area-development/Preview\\ Content area-development/Info.plist";
-				DEVELOPMENT_TEAM = 99A5AQA8NN;
+				DEVELOPMENT_TEAM = Q4HH2BYVAV;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -456,7 +480,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "prod.area-development";
+				PRODUCT_BUNDLE_IDENTIFIER = "area-flowz.development";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
@@ -476,7 +500,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "area-development/Preview\\ Content area-development/Info.plist";
-				DEVELOPMENT_TEAM = 99A5AQA8NN;
+				DEVELOPMENT_TEAM = Q4HH2BYVAV;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -496,7 +520,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "prod.area-development";
+				PRODUCT_BUNDLE_IDENTIFIER = "area-flowz.development";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
@@ -513,12 +537,12 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 99A5AQA8NN;
+				DEVELOPMENT_TEAM = Q4HH2BYVAV;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "prod.area-developmentTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "prod.flowz-developmentTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
@@ -536,12 +560,12 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 99A5AQA8NN;
+				DEVELOPMENT_TEAM = Q4HH2BYVAV;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "prod.area-developmentTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "prod.flowz-developmentTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
@@ -558,12 +582,12 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 99A5AQA8NN;
+				DEVELOPMENT_TEAM = Q4HH2BYVAV;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "prod.area-developmentUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "prod.flowz-developmentUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
@@ -580,12 +604,12 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 99A5AQA8NN;
+				DEVELOPMENT_TEAM = Q4HH2BYVAV;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "prod.area-developmentUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "prod.flowz-developmentUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
@@ -647,6 +671,14 @@
 				minimumVersion = 5.9.1;
 			};
 		};
+		8F5480212CB4770600066EF2 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.5.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -654,6 +686,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1BB172FB2CAB4A8600C0C89D /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
+		};
+		8F5480222CB4770600066EF2 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8F5480212CB4770600066EF2 /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
