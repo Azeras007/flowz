@@ -1,41 +1,76 @@
 import SwiftUI
+import UserNotifications
 import AuthenticationServices
 import SafariServices
+import Alamofire
 
 @main
 struct AreaDevelopmentApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
     @State private var isUserLoggedIn: Bool = false
     @State private var isLoginorRegister: Bool = false
     @State private var isAppSelection: Bool = true
     @State private var isLoading: Bool = true
+    @State private var selectedAreaInstance: Area?
+    @State private var navigateToLogs = false
 
     var body: some Scene {
         WindowGroup {
-            if isLoading {
-                LoadingView()
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            checkAuthentication()
+            NavigationView {
+                VStack {
+                    if let selectedArea = selectedAreaInstance {
+                        NavigationLink(
+                            destination: AreaLogsView(area: selectedArea),
+                            isActive: $navigateToLogs
+                        ) {
+                            EmptyView()
                         }
                     }
-            } else {
-                if isUserLoggedIn {
-                    if isAppSelection {
-                        AppSelectionView(isAppSelection: $isAppSelection)
+
+                    if isLoading {
+                        LoadingView()
+                            .onAppear {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                    checkAuthentication()
+                                }
+                            }
                     } else {
-                        MainView(isUserLoggedIn: $isUserLoggedIn)
+                        if isUserLoggedIn {
+                            if isAppSelection {
+                                AppSelectionView(isAppSelection: $isAppSelection)
+                            } else {
+                                MainView(isUserLoggedIn: $isUserLoggedIn)
+                            }
+                        } else {
+                            if isLoginorRegister {
+                                LoginView(isUserLoggedIn: $isUserLoggedIn, isLoginorRegister: $isLoginorRegister)
+                                    .onOpenURL { url in
+                                        handleAuthCallback(url: url)
+                                    }
+                            } else {
+                                RegisterView(isUserLoggedIn: $isUserLoggedIn, isLoginorRegister: $isLoginorRegister)
+                                    .onOpenURL { url in
+                                        handleAuthCallback(url: url)
+                                    }
+                            }
+                        }
                     }
-                } else {
-                    if isLoginorRegister {
-                        LoginView(isUserLoggedIn: $isUserLoggedIn, isLoginorRegister: $isLoginorRegister)
-                            .onOpenURL { url in
-                                handleAuthCallback(url: url)
-                            }
-                    } else {
-                        RegisterView(isUserLoggedIn: $isUserLoggedIn, isLoginorRegister: $isLoginorRegister)
-                            .onOpenURL { url in
-                                handleAuthCallback(url: url)
-                            }
+                }
+            }
+            .onAppear {
+                setupNotifications()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: Notification.Name("AreaNotification"))) { notification in
+                if let areaId = notification.userInfo?["area_id"] as? Int {
+                    print("Notification received for area ID: \(areaId)")
+                    fetchAreaById(areaId: areaId) { area in
+                        if let area = area {
+                            self.selectedAreaInstance = area
+                            self.navigateToLogs = true
+                        } else {
+                            print("Failed to load the area with id \(areaId)")
+                        }
                     }
                 }
             }
@@ -84,5 +119,53 @@ struct AreaDevelopmentApp: App {
     private func extractIsRegistered(from url: URL) -> String? {
         let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
         return components?.queryItems?.first(where: { $0.name == "registred" })?.value
+    }
+
+    private func setupNotifications() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
+            if granted {
+                DispatchQueue.main.async {
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
+            } else {
+                print("Notification permission not granted.")
+            }
+        }
+
+        UNUserNotificationCenter.current().delegate = appDelegate
+    }
+    func fetchAreaById(areaId: Int, completion: @escaping (Area?) -> Void) {
+        let token = KeychainHelper.getToken() ?? ""
+        let headers: HTTPHeaders = [
+            "Authorization": "Bearer \(token)",
+            "Accept": "application/json"
+        ]
+        
+        let url = "https://area-development.tech/api/areas/\(areaId)"
+        
+        AF.request(url, method: .get, headers: headers).responseJSON { response in
+            switch response.result {
+            case .success(let value):
+                print("Response JSON Area: \(value)")
+                if let data = response.data {
+                    do {
+                        let decodedResponse = try JSONDecoder().decode(AreaRep.self, from: data)
+                        DispatchQueue.main.async {
+                            completion(decodedResponse.data)
+                        }
+                    } catch {
+                        print("Error decoding area: \(error)")
+                        DispatchQueue.main.async {
+                            completion(nil)
+                        }
+                    }
+                }
+            case .failure(let error):
+                print("Failed to fetch area: \(error)")
+                DispatchQueue.main.async {
+                    completion(nil)
+                }
+            }
+        }
     }
 }

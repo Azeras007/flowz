@@ -4,6 +4,8 @@ struct TriggerFormView: View {
     var trigger: Trigger
     var actionFormData: FormData
     var action: Action
+    @State private var isUserLoggedIn: Bool = true
+    @State private var navigateToMainView = false
     @State private var formData: [String: String] = [:]
     @State private var savedFormData: TriggerFormData?
     @State private var name: String = ""
@@ -18,7 +20,7 @@ struct TriggerFormView: View {
                     .fontWeight(.bold)
                     .foregroundColor(colorScheme == .dark ? Color.white : Color.primary)
                     .frame(maxWidth: .infinity, alignment: .center)
-
+                
                 HStack {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
@@ -29,13 +31,13 @@ struct TriggerFormView: View {
                             .foregroundColor(colorScheme == .dark ? Color.white : Color.primary)
                     }
                     .padding(.leading, 20)
-
+                    
                     Spacer()
                 }
             }
             .padding(.top, 40)
             .navigationBarHidden(true)
-
+            
             
             Form {
                 TextField("Name de l'Area", text: $name)
@@ -56,7 +58,9 @@ struct TriggerFormView: View {
             
             Button(action: {
                 saveFormData()
-                createArea(name: name, trigger: trigger, action: action,actionFormData: actionFormData, triggerFormData: savedFormData)
+                createArea(name: name, trigger: trigger, action: action, actionFormData: actionFormData, triggerFormData: savedFormData)
+                self.presentationMode.wrappedValue.dismiss()
+                navigateToMainView = true
             }) {
                 Text("Submit")
                     .padding()
@@ -66,6 +70,11 @@ struct TriggerFormView: View {
                     .foregroundColor(.black)
                     .cornerRadius(10)
             }
+            
+            NavigationLink(destination: MainView(isUserLoggedIn: $isUserLoggedIn), isActive: $navigateToMainView) {
+                EmptyView()
+            }
+            
             
             Spacer()
         }

@@ -1,60 +1,62 @@
-//
-//  AppDelegate.swift
-//  area-development
-//
-//  Created by Antoine Laurans on 09/10/2024.
-//
-
-
-import UserNotifications
 import UIKit
+import UserNotifications
+import Alamofire
 
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-
+class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Demander la permission pour les notifications
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
             if granted {
                 DispatchQueue.main.async {
                     UIApplication.shared.registerForRemoteNotifications()
                 }
             } else {
-                print("Notifications permission not granted.")
+                print("Notification permission not granted: \(error?.localizedDescription ?? "Unknown error")")
             }
         }
-        
         UNUserNotificationCenter.current().delegate = self
         
         return true
     }
-    
-    // Enregistrement du token APNs
+
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         let tokenParts = deviceToken.map { data in String(format: "%02.2hhx", data) }
-        let token = tokenParts.joined()
-        print("Device Token: \(token)")
-        // Envoyer le token au serveur pour envoyer des notifications push
-    }
-    
-    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        print("Failed to register for remote notifications: \(error)")
-    }
-}
+        let Device_token = tokenParts.joined()
+        print("Device Token: \(Device_token)")
+        let token = KeychainHelper.getToken() ?? ""
+        let headers: HTTPHeaders = [
+            "Authorization": "Bearer \(token)",
+            "Accept": "application/json"
+        ]
+        
+        let parameters: [String: String] = [
+            "device_token": Device_token
+        ]
 
-extension AppDelegate: UNUserNotificationCenterDelegate {
-    
-    // Lorsque l'utilisateur clique sur la notification
+        let url = "https://area-development.tech/api/setDeviceToken"
+        
+        AF.request(url, method: .post, parameters: parameters ,headers: headers).responseJSON { response in
+            switch response.result {
+            case .success(let value):
+                print("Success: \(value)")
+            case .failure(let error):
+                print("Failed to register device token: \(error)")
+            }
+        }
+    }
+
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("Failed to register: \(error)")
+    }
+
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         let userInfo = response.notification.request.content.userInfo
-        if let areaId = userInfo["area_id"] as? String {
-            // Rediriger vers la page spécifique de logs de l'area
+        if let areaId = userInfo["area_id"] as? Int {
             NotificationCenter.default.post(name: Notification.Name("AreaNotification"), object: nil, userInfo: ["area_id": areaId])
         }
         completionHandler()
     }
-    
-    // Notifications en premier plan
+
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         completionHandler([.badge, .sound, .alert])
     }
