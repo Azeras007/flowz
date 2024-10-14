@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ActionFormView: View {
     @State private var formData: [String: String] = [:]
-    @State private var shouldNavigate = false
+    @State private var gotoConfirmation = false
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
     
@@ -47,7 +47,7 @@ struct ActionFormView: View {
             
             Button(action: {
                 saveFormData()
-                shouldNavigate = true
+                gotoConfirmation = true
             }) {
                 Text("Submit")
                     .padding()
@@ -60,7 +60,8 @@ struct ActionFormView: View {
             .padding(.horizontal)
             .padding(.top, 20)
             
-            NavigationLink(destination: SubServicesTriggerView(), isActive: $shouldNavigate) {
+            
+            NavigationLink(destination: ConfirmationCreateAreaView(), isActive: $gotoConfirmation) {
                 EmptyView()
             }
             

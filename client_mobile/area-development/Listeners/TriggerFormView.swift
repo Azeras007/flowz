@@ -2,7 +2,7 @@ import SwiftUI
 
 struct TriggerFormView: View {
     @State private var isUserLoggedIn: Bool = true
-    @State private var navigateToConfirmation = false
+    @State private var shouldNavigate = false
     @State private var formData: [String: String] = [:]
     @State private var name: String = ""
     @Environment(\.presentationMode) var presentationMode
@@ -52,7 +52,7 @@ struct TriggerFormView: View {
             
             Button(action: {
                 saveFormData()
-                navigateToConfirmation = true
+                shouldNavigate = true
             }) {
                 Text("Submit")
                     .padding()
@@ -63,7 +63,7 @@ struct TriggerFormView: View {
                     .cornerRadius(10)
             }
             
-            NavigationLink(destination: ConfirmationCreateAreaView(), isActive: $navigateToConfirmation) {
+            NavigationLink(destination: SubServicesActionsView(), isActive: $shouldNavigate) {
                 EmptyView()
             }
             Spacer()
@@ -73,7 +73,7 @@ struct TriggerFormView: View {
     
     func saveFormData() {
         let savedFormData = TriggerFormData(fields: formData)
-        KeychainHelper.deleteSavedFormDataAction()
+        KeychainHelper.deleteSavedFormDataTrigger()
         KeychainHelper.savedFormDataTrigger(savedFormData)
         print("Trigger form data saved: \(KeychainHelper.getSavedFormDataTrigger())")
     }

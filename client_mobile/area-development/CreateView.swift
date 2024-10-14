@@ -45,7 +45,7 @@ struct CreateView: View {
 
                             Spacer()
 
-                            NavigationLink(destination: SubServicesActionsView()) {
+                            NavigationLink(destination: SubServicesTriggerView()) {
                                 Text("Add")
                                     .font(.title3)
                                     .fontWeight(.bold)
