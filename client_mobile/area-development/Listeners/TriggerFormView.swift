@@ -1,13 +1,9 @@
 import SwiftUI
 
 struct TriggerFormView: View {
-    var trigger: Trigger
-    var actionFormData: FormData
-    var action: Action
     @State private var isUserLoggedIn: Bool = true
-    @State private var navigateToMainView = false
+    @State private var navigateToConfirmation = false
     @State private var formData: [String: String] = [:]
-    @State private var savedFormData: TriggerFormData?
     @State private var name: String = ""
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
@@ -40,10 +36,8 @@ struct TriggerFormView: View {
             
             
             Form {
-                TextField("Name de l'Area", text: $name)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                if (!trigger.metadataFields.isEmpty) {
-                    ForEach(trigger.metadataFields, id: \.name) { field in
+                if (!KeychainHelper.getTrigger()!.metadataFields.isEmpty) {
+                    ForEach(KeychainHelper.getTrigger()!.metadataFields, id: \.name) { field in
                         if field.type == "text" || field.type == "string" {
                             TextField(field.label, text: Binding(
                                 get: { formData[field.name] ?? "" },
@@ -58,9 +52,7 @@ struct TriggerFormView: View {
             
             Button(action: {
                 saveFormData()
-                createArea(name: name, trigger: trigger, action: action, actionFormData: actionFormData, triggerFormData: savedFormData)
-                self.presentationMode.wrappedValue.dismiss()
-                navigateToMainView = true
+                navigateToConfirmation = true
             }) {
                 Text("Submit")
                     .padding()
@@ -71,18 +63,18 @@ struct TriggerFormView: View {
                     .cornerRadius(10)
             }
             
-            NavigationLink(destination: MainView(isUserLoggedIn: $isUserLoggedIn), isActive: $navigateToMainView) {
+            NavigationLink(destination: ConfirmationCreateAreaView(), isActive: $navigateToConfirmation) {
                 EmptyView()
             }
-            
-            
             Spacer()
         }
         .padding()
     }
     
     func saveFormData() {
-        savedFormData = TriggerFormData(fields: formData)
-        print("Trigger form data saved: \(savedFormData?.fields ?? [:])")
+        let savedFormData = TriggerFormData(fields: formData)
+        KeychainHelper.deleteSavedFormDataAction()
+        KeychainHelper.savedFormDataTrigger(savedFormData)
+        print("Trigger form data saved: \(KeychainHelper.getSavedFormDataTrigger())")
     }
 }

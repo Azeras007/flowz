@@ -1,13 +1,7 @@
 import SwiftUI
 
-struct FormData {
-    var fields: [String: String]
-}
-
 struct ActionFormView: View {
-    var action: Action
     @State private var formData: [String: String] = [:]
-    @State private var savedFormData: FormData = FormData(fields: [:])
     @State private var shouldNavigate = false
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
@@ -39,7 +33,7 @@ struct ActionFormView: View {
             .navigationBarHidden(true)
             
             Form {
-                ForEach(action.metadata.fields, id: \.name) { field in
+                ForEach(KeychainHelper.getAction()!.metadata.fields, id: \.name) { field in
                     if field.type == "text" {
                         TextField(field.label, text: Binding(
                             get: { formData[field.name] ?? "" },
@@ -66,7 +60,7 @@ struct ActionFormView: View {
             .padding(.horizontal)
             .padding(.top, 20)
             
-            NavigationLink(destination: SubServicesTriggerView(actionFormData: savedFormData, action: action), isActive: $shouldNavigate) {
+            NavigationLink(destination: SubServicesTriggerView(), isActive: $shouldNavigate) {
                 EmptyView()
             }
             
@@ -76,7 +70,10 @@ struct ActionFormView: View {
     }
     
     func saveFormData() {
-        savedFormData = FormData(fields: formData)
-        print("Form data saved: \(savedFormData.fields)")
+        
+        let formDatasaved = FormData(fields: formData)
+        KeychainHelper.deleteSavedFormDataAction()
+        KeychainHelper.savedFormDataAction(formDatasaved)
+        print("Form data saved: \(KeychainHelper.getSavedFormDataAction())")
     }
 }
