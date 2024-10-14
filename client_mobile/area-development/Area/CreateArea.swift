@@ -1,7 +1,7 @@
 import Alamofire
 import Foundation
 
-func createArea(name: String, trigger: Trigger, action: Action,actionFormData: FormData, triggerFormData: TriggerFormData?) {
+func createArea() {
     let url = "https://area-development.tech/api/areas/new"
     let token = KeychainHelper.getToken() ?? ""
     let headers: HTTPHeaders = [
@@ -9,14 +9,17 @@ func createArea(name: String, trigger: Trigger, action: Action,actionFormData: F
         "Accept": "application/json"
     ]
     
-    let listenerID = String(trigger.id)
-    let actionID = String(action.id)
+    let listenerID = KeychainHelper.getTrigger()?.id ?? 0
+    let actionID = KeychainHelper.getAction()?.id ?? 0
+    let triggerFormData = KeychainHelper.getSavedFormDataTrigger()!
+    let actionFormData = KeychainHelper.getSavedFormDataAction()!
+    let name = KeychainHelper.getNameArea()!
     
     print("Creating area with listener ID \(listenerID) and action ID \(actionID)")
-    print("Trigger form data: \(triggerFormData?.fields ?? [:])")
+    print("Trigger form data: \(triggerFormData.fields)")
     print("Action form data: \(actionFormData.fields)")
 
-    let triggerPayload = triggerFormData?.fields.isEmpty == false ? triggerFormData?.fields.mapValues { String(describing: $0) } : nil
+    let triggerPayload = triggerFormData.fields.isEmpty == false ? triggerFormData.fields.mapValues { String(describing: $0) } : nil
     let actionPayload = actionFormData.fields.mapValues { String(describing: $0) }
 
     guard JSONSerialization.isValidJSONObject(actionPayload) else {

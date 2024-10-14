@@ -70,8 +70,8 @@ struct ActionsSelectionView: View {
                     LoadingView()
                 } else {
                     LazyVGrid(columns: [GridItem(.flexible())], spacing: 20) {
-                        ForEach(actions) { action in
-                            NavigationLink(destination: ActionFormView(action: action)) {
+                        ForEach(KeychainHelper.getActions()!) { action in
+                            NavigationLink(destination: ActionFormView()) {
                                 RoundedRectangle(cornerRadius: 12)
                                     .fill(Color.yellow)
                                     .shadow(radius: 2)
@@ -81,7 +81,10 @@ struct ActionsSelectionView: View {
                                             .fontWeight(.bold)
                                             .foregroundColor(.black)
                                     )
-                            }
+                            }.onAppear(perform: {
+                                KeychainHelper.deleteAction()
+                                KeychainHelper.saveAction(action)
+                            })
                             .buttonStyle(PlainButtonStyle())
                         }
                     }
@@ -113,7 +116,8 @@ struct ActionsSelectionView: View {
                     do {
                         let decodedResponse = try JSONDecoder().decode([Action].self, from: data)
                         DispatchQueue.main.async {
-                            self.actions = decodedResponse
+                            KeychainHelper.deleteActions()
+                            KeychainHelper.saveActions(decodedResponse)
                             self.isLoading = false
                         }
                     } catch {

@@ -2,13 +2,11 @@ import SwiftUI
 import Alamofire
 
 struct TriggerSelectionView: View {
-    var subService: SubService
-    var actionFormData: FormData
-    var action: Action
     @State private var triggers: [Trigger] = []
     @State private var isLoading = true
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
+    var subService: SubService
 
     var body: some View {
         VStack {
@@ -72,8 +70,8 @@ struct TriggerSelectionView: View {
                     LoadingView()
                 } else {
                     LazyVGrid(columns: [GridItem(.flexible())], spacing: 20) {
-                        ForEach(triggers) { trigger in
-                            NavigationLink(destination: TriggerFormView(trigger: trigger, actionFormData: actionFormData, action: action)) {
+                        ForEach(KeychainHelper.getTriggers()!) { trigger in
+                            NavigationLink(destination: TriggerFormView()) {
                                 RoundedRectangle(cornerRadius: 12)
                                     .fill(Color.yellow)
                                     .shadow(radius: 2)
@@ -83,7 +81,10 @@ struct TriggerSelectionView: View {
                                             .fontWeight(.bold)
                                             .foregroundColor(.black)
                                     )
-                            }
+                            }.onAppear(perform: {
+                                KeychainHelper.deleteTrigger()
+                                KeychainHelper.saveTrigger(trigger)
+                            })
                             .buttonStyle(PlainButtonStyle())
                         }
                     }
@@ -116,7 +117,8 @@ struct TriggerSelectionView: View {
                     do {
                         let decodedResponse = try JSONDecoder().decode([Trigger].self, from: data)
                         DispatchQueue.main.async {
-                            self.triggers = decodedResponse
+                            KeychainHelper.deleteTriggers()
+                            KeychainHelper.saveTriggers(decodedResponse)
                             self.isLoading = false
                         }
                     } catch {
@@ -133,7 +135,7 @@ struct TriggerSelectionView: View {
 }
 
 struct TriggerItemView: View {
-    var trigger: Trigger
+    var trigger: Trigger = KeychainHelper.getTrigger()!
 
     var body: some View {
         VStack {

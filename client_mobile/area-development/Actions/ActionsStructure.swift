@@ -1,4 +1,4 @@
-struct Action: Identifiable, Decodable {
+struct Action: Identifiable, Codable {
     var id: Int
     var sub_service_id: Int
     var name: String
@@ -9,13 +9,17 @@ struct Action: Identifiable, Decodable {
     var updated_at: String
 }
 
-struct Metadata: Decodable {
+struct Metadata: Codable {
     var fields: [MetadataField]
 }
 
-struct MetadataField: Decodable {
+struct MetadataField: Codable {
     var name: String
     var type: String
     var label: String
     var required: Bool
+}
+
+struct FormData: Codable {
+    var fields: [String: String]
 }

@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct SubServicesTriggerView: View {
-    var actionFormData: FormData
-    var action: Action
     @State private var searchText = ""
     @State private var subServices: [SubService] = []
     @State private var isLoading = true
@@ -82,7 +80,7 @@ struct SubServicesTriggerView: View {
                 } else {
                     LazyVGrid(columns: [GridItem(.flexible(), spacing: 20), GridItem(.flexible(), spacing: 20)], spacing: 20) {
                         ForEach(filteredServices) { subService in
-                            SubServiceGridItem(subService: subService, actionFormData: actionFormData, action: action)
+                            SubServiceGridItem(subService: subService)
                         }
                     }
                     .padding(.horizontal, 20)
@@ -109,13 +107,11 @@ struct SubServicesTriggerView: View {
 }
 
 struct SubServiceGridItem: View {
-    var subService: SubService
-    var actionFormData: FormData
-    var action: Action
     @Environment(\.colorScheme) var colorScheme
+    var subService: SubService
 
     var body: some View {
-        NavigationLink(destination: TriggerSelectionView(subService: subService, actionFormData: actionFormData, action: action)) {
+        NavigationLink(destination: TriggerSelectionView(subService: subService)) {
             VStack {
                 AsyncImage(url: URL(string: subService.icon_url)) { image in
                     image.resizable()

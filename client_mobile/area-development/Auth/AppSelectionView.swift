@@ -186,11 +186,11 @@ struct AppIconView: View {
     }
 }
 
-struct SubServiceResponse: Decodable {
+struct SubServiceResponse: Codable {
     let data: [SubService]
 }
 
-struct SubService: Identifiable, Decodable {
+struct SubService: Identifiable, Codable {
     var id: Int
     var name: String
     var icon_url: String

@@ -1,4 +1,4 @@
-struct Trigger: Identifiable, Decodable {
+struct Trigger: Identifiable, Codable {
     var id: Int
     var sub_service_id: Int
     var name: String
@@ -42,13 +42,26 @@ struct Trigger: Identifiable, Decodable {
             metadata = nil
         }
     }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode(id, forKey: .id)
+        try container.encode(sub_service_id, forKey: .sub_service_id)
+        try container.encode(name, forKey: .name)
+        try container.encode(type, forKey: .type)
+        try container.encode(icon_url, forKey: .icon_url)
+        try container.encode(metadata, forKey: .metadata)
+        try container.encode(created_at, forKey: .created_at)
+        try container.encode(updated_at, forKey: .updated_at)
+    }
 }
 
-struct TriggerMetadata: Decodable {
+struct TriggerMetadata: Codable {
     var fields: [TriggerMetadataField]
 }
 
-struct TriggerMetadataField: Decodable {
+struct TriggerMetadataField: Codable {
     var label: String
     var name: String
     var required: Bool
@@ -56,6 +69,6 @@ struct TriggerMetadataField: Decodable {
 }
 
 
-struct TriggerFormData {
+struct TriggerFormData: Codable {
     var fields: [String: String]
 }
