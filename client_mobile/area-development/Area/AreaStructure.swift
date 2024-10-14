@@ -9,7 +9,7 @@ struct AreaRep: Decodable {
     var data: Area
 }
 
-struct Area: Identifiable, Decodable {
+struct Area: Identifiable, Decodable, Hashable {
     var id: Int
     var name: String
     var status: Bool

@@ -5,6 +5,7 @@ struct ProfileView: View {
     @Binding var selectedTab: String
     @Binding var isPresentingCreateView: Bool
     @State private var isShowingLogoutAlert = false
+    @Environment(\.colorScheme) var colorScheme 
 
     var body: some View {
         ZStack {
@@ -49,6 +50,10 @@ struct ProfileView: View {
                 CustomNavBar(selectedTab: $selectedTab, isPresentingCreateView: $isPresentingCreateView)
             }
         }
+        .background(
+            (colorScheme == .dark ? Color(red: 28/255, green: 28/255, blue: 28/255) : Color(red: 242/255, green: 242/255, blue: 242/255))
+                .edgesIgnoringSafeArea(.all)
+            )
     }
 
     private func signOut() {

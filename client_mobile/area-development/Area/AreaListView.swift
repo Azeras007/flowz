@@ -2,41 +2,62 @@ import SwiftUI
 import Alamofire
 
 struct AreaListView: View {
+    @Binding var selectedTab: String
+    @Binding var isPresentingCreateView: Bool
+    @Binding var navigationPath: NavigationPath
     @State private var areas: [Area] = []
     @State private var isLoading = true
+    @Environment(\.colorScheme) var colorScheme
+
 
     var body: some View {
-        VStack {
-            Text("Your Areas")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .padding(.top, 20)
-            
-            if isLoading {
-                ProgressView("Loading areas...")
+        ZStack {
+            VStack {
+                Text("Your Areas")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
                     .padding(.top, 20)
-            } else {
-                ScrollView {
-                    LazyVStack(spacing: 20) {
-                        ForEach(areas) { area in
-                            HStack {
-                                NavigationLink(destination: AreaLogsView(area: area)) {
-                                    AreaItemView(area: area)
+                
+                if isLoading {
+                    ProgressView("Loading areas...")
+                        .padding(.top, 20)
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 20) {
+                            ForEach(areas) { area in
+                                HStack {
+                                    Button(action: {
+                                        navigationPath.append(AreaLogsView(area: area))
+                                    }) {
+                                        AreaItemView(area: area)
+                                    }
                                 }
                             }
                         }
+                        .padding(.horizontal, 20)
                     }
-                    .padding(.horizontal, 20)
                 }
+                
+                Spacer()
             }
-            
-            Spacer()
+            .onAppear {
+                fetchAreas()
+            }
+
+            VStack {
+                Spacer()
+                CustomNavBar(
+                    selectedTab: $selectedTab,
+                    isPresentingCreateView: $isPresentingCreateView
+                )
+            }
         }
-        .onAppear {
-            fetchAreas()
-        }
+        .background(
+            (colorScheme == .dark ? Color(red: 28/255, green: 28/255, blue: 28/255) : Color(red: 242/255, green: 242/255, blue: 242/255))
+                .edgesIgnoringSafeArea(.all)
+            )
     }
-    
+
     func fetchAreas() {
         let token = KeychainHelper.getToken() ?? ""
         let headers: HTTPHeaders = [

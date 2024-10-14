@@ -2,7 +2,15 @@ import SwiftUI
 import Alamofire
 import Foundation
 
-struct AreaLogsView: View {
+struct AreaLogsView: View, Hashable {
+    static func == (lhs: AreaLogsView, rhs: AreaLogsView) -> Bool {
+        lhs.area.id == rhs.area.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(area.id)
+    }
+
     @State private var logs: [Log] = []
     @State private var isLoading = true
     @State private var currentPage = 1

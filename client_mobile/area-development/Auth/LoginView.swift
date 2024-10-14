@@ -40,7 +40,6 @@ struct LoginView: View {
                 .cornerRadius(10)
                 .padding(.horizontal)
 
-            // add simple login button
             Button(action: {
                 AF.request("https://area-development.tech/api/auth/login", method: .post, parameters: ["email": email, "password": password], encoding: JSONEncoding.default)
                     .validate(statusCode: 200..<300)

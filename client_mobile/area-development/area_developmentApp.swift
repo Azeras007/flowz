@@ -14,45 +14,53 @@ struct AreaDevelopmentApp: App {
     @State private var isLoading: Bool = true
     @State private var selectedAreaInstance: Area?
     @State private var navigateToLogs = false
+    @State private var showGetStarted: Bool = true
 
     var body: some Scene {
         WindowGroup {
             NavigationView {
                 VStack {
-                    if let selectedArea = selectedAreaInstance {
-                        NavigationLink(
-                            destination: AreaLogsView(area: selectedArea),
-                            isActive: $navigateToLogs
-                        ) {
-                            EmptyView()
-                        }
-                    }
-
-                    if isLoading {
-                        LoadingView()
+                    if showGetStarted {
+                        GetStartedView(showLoginOrRegister: $isLoginorRegister, showGetStarted: $showGetStarted)
                             .onAppear {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                    checkAuthentication()
-                                }
+                                checkAuthentication()
                             }
                     } else {
-                        if isUserLoggedIn {
-                            if isAppSelection {
-                                AppSelectionView(isAppSelection: $isAppSelection)
-                            } else {
-                                MainView(isUserLoggedIn: $isUserLoggedIn)
+                        if let selectedArea = selectedAreaInstance {
+                            NavigationLink(
+                                destination: AreaLogsView(area: selectedArea),
+                                isActive: $navigateToLogs
+                            ) {
+                                EmptyView()
                             }
+                        }
+
+                        if isLoading {
+                            LoadingView()
+                                .onAppear {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                        checkAuthentication()
+                                    }
+                                }
                         } else {
-                            if isLoginorRegister {
-                                LoginView(isUserLoggedIn: $isUserLoggedIn, isLoginorRegister: $isLoginorRegister)
-                                    .onOpenURL { url in
-                                        handleAuthCallback(url: url)
-                                    }
+                            if isUserLoggedIn {
+                                if isAppSelection {
+                                    AppSelectionView(isAppSelection: $isAppSelection)
+                                } else {
+                                    MainView(isUserLoggedIn: $isUserLoggedIn)
+                                }
                             } else {
-                                RegisterView(isUserLoggedIn: $isUserLoggedIn, isLoginorRegister: $isLoginorRegister)
-                                    .onOpenURL { url in
-                                        handleAuthCallback(url: url)
-                                    }
+                                if isLoginorRegister {
+                                    RegisterView(isUserLoggedIn: $isUserLoggedIn, isLoginorRegister: $isLoginorRegister)
+                                        .onOpenURL { url in
+                                            handleAuthCallback(url: url)
+                                        }
+                                } else {
+                                    LoginView(isUserLoggedIn: $isUserLoggedIn, isLoginorRegister: $isLoginorRegister)
+                                        .onOpenURL { url in
+                                            handleAuthCallback(url: url)
+                                        }
+                                }
                             }
                         }
                     }
@@ -81,8 +89,10 @@ struct AreaDevelopmentApp: App {
         if let token = KeychainHelper.getToken(), !token.isEmpty {
             isUserLoggedIn = true
             isAppSelection = !hasCompletedAppSelection()
+            showGetStarted = false
         } else {
             isUserLoggedIn = false
+            showGetStarted = true
         }
         isLoading = false
     }
@@ -90,6 +100,7 @@ struct AreaDevelopmentApp: App {
     private func hasCompletedAppSelection() -> Bool {
         return UserDefaults.standard.bool(forKey: "hasCompletedAppSelection")
     }
+
 
     private func handleAuthCallback(url: URL) {
         guard let token = extractAuthorizationToken(from: url) else {
@@ -108,6 +119,7 @@ struct AreaDevelopmentApp: App {
         if !token.isEmpty {
             KeychainHelper.saveToken(token)
             isUserLoggedIn = true
+            showGetStarted = false
         }
     }
 

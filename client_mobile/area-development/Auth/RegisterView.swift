@@ -88,10 +88,10 @@ struct RegisterView: View {
                     .font(.footnote)
                 
                 Button(action: {
-                    isLoginorRegister = true
+                    isLoginorRegister = false
                 }) {
                     Text("Sign in")
-                        .foregroundColor(.blue)
+                        .foregroundColor(.yellow)
                         .font(.footnote)
                         .underline()
                 }
