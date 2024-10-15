@@ -31,7 +31,7 @@ struct ActionFormView: View {
             }
             .padding(.top, 40)
             .navigationBarHidden(true)
-            
+
             Form {
                 ForEach(KeychainHelper.getAction()!.metadata.fields, id: \.name) { field in
                     if field.type == "text" {
