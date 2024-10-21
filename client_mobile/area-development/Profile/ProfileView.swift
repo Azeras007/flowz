@@ -1,24 +1,25 @@
 import SwiftUI
+import Alamofire
 
 struct ProfileView: View {
     @Binding var isUserLoggedIn: Bool
     @Binding var selectedTab: String
     @Binding var isPresentingCreateView: Bool
     @State private var isShowingLogoutAlert = false
-    @Environment(\.colorScheme) var colorScheme 
-
+    @Environment(\.colorScheme) var colorScheme
+    
     var body: some View {
         ZStack {
             VStack {
                 Spacer()
-
+                
                 Text("Profile")
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .padding(.top)
-
+                
                 Spacer()
-
+                
                 Button(action: {
                     isShowingLogoutAlert = true
                 }) {
@@ -39,11 +40,11 @@ struct ProfileView: View {
                         secondaryButton: .cancel()
                     )
                 }
-
+                
                 Spacer()
             }
             .padding(.top, 50)
-
+            
             VStack {
                 Spacer()
                 
@@ -53,9 +54,9 @@ struct ProfileView: View {
         .background(
             (colorScheme == .dark ? Color(red: 28/255, green: 28/255, blue: 28/255) : Color(red: 242/255, green: 242/255, blue: 242/255))
                 .edgesIgnoringSafeArea(.all)
-            )
+        )
     }
-
+    
     private func signOut() {
         KeychainHelper.deleteToken()
         isUserLoggedIn = false

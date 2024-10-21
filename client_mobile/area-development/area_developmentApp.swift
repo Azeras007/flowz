@@ -47,7 +47,7 @@ struct AreaDevelopmentApp: App {
                                 if isAppSelection {
                                     AppSelectionView(isAppSelection: $isAppSelection)
                                 } else {
-                                    MainView(isUserLoggedIn: $isUserLoggedIn)
+                                    ConnectedView()
                                 }
                             } else {
                                 if isLoginorRegister {
