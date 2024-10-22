@@ -43,7 +43,7 @@ struct ConnectedView: View {
                             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
                                 ForEach(connectedServices, id: \.id) { service in
                                     VStack {
-                                        Image(systemName: service.iconUrl) // Placeholder, remplacez-le par l'icône du service
+                                        Image(systemName: service.iconUrl) // A Remplacer Par icone d'un service
                                             .resizable()
                                             .aspectRatio(contentMode: .fit)
                                             .frame(width: 40, height: 40)
@@ -81,7 +81,7 @@ struct ConnectedView: View {
                             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
                                 ForEach(disconnectedServices, id: \.id) { service in
                                     VStack {
-                                        Image(systemName: service.iconUrl) // Placeholder, remplacez-le par l'icône du service
+                                        Image(systemName: service.iconUrl) // A Remplacer Par icone d'un service
                                             .resizable()
                                             .aspectRatio(contentMode: .fit)
                                             .frame(width: 40, height: 40)
@@ -121,6 +121,7 @@ struct ConnectedView: View {
             .sheet(isPresented: $showSafari, onDismiss: {
                 authURL = nil
                 showSafari = false
+                
             }) {
                 if let url = authURL {
                     SafariView(url: url)
@@ -236,6 +237,7 @@ struct ConnectedView: View {
         authURL = URL(string: "https://area-development.tech/api/accounts/link/\(service.id)?redirect_url=areadevelopment://auth&token=\(token)")
         if authURL != nil {
             showSafari.toggle()
+            fetchAvailableServices()
         }
     }
     
