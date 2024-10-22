@@ -3,6 +3,7 @@ struct Trigger: Identifiable, Codable {
     var sub_service_id: Int
     var name: String
     var type: String
+    var can_return: [String]?
     var icon_url: String
     var metadata: TriggerMetadata?
     var created_at: String
@@ -18,6 +19,7 @@ struct Trigger: Identifiable, Codable {
         case name
         case type
         case icon_url
+        case can_return
         case metadata
         case created_at
         case updated_at
@@ -33,6 +35,7 @@ struct Trigger: Identifiable, Codable {
         icon_url = try container.decode(String.self, forKey: .icon_url)
         created_at = try container.decode(String.self, forKey: .created_at)
         updated_at = try container.decode(String.self, forKey: .updated_at)
+        can_return = try container.decodeIfPresent([String].self, forKey: .can_return)
 
         if let metadataDict = try? container.decode(TriggerMetadata.self, forKey: .metadata) {
             metadata = metadataDict
@@ -52,6 +55,7 @@ struct Trigger: Identifiable, Codable {
         try container.encode(type, forKey: .type)
         try container.encode(icon_url, forKey: .icon_url)
         try container.encode(metadata, forKey: .metadata)
+        try container.encode(can_return, forKey: .can_return)
         try container.encode(created_at, forKey: .created_at)
         try container.encode(updated_at, forKey: .updated_at)
     }

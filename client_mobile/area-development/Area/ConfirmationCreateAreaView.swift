@@ -9,7 +9,6 @@ struct ConfirmationCreateAreaView: View{
         VStack {
             
             Form {
-                // Creer un formulaire pour remplir le nom de l'area et tu l'enregistre dans le keychain
                 TextField("Name", text: $nameArea)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .onChange(of: nameArea) { newValue in

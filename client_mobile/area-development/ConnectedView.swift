@@ -16,65 +16,131 @@ struct ServiceStatus {
 }
 
 struct ConnectedView: View {
+    @Binding var isUserLoggedIn: Bool
+    @Binding var selectedTab: String
+    @Binding var isPresentingCreateView: Bool
     @State private var connectedServices: [Service_2] = []
     @State private var disconnectedServices: [Service_2] = []
     @State private var userServicesStatus: [ServiceStatus] = []
     @State private var isLoading = true
     @State private var showSafari: Bool = false
     @State private var authURL: URL?
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        VStack {
-            if isLoading {
-                ProgressView("Loading...")
-            } else {
-                Text("Connected Services")
-                ForEach(connectedServices, id: \.id) { service in
-                    Button(action: {
-                        linkService(service)
-                    }) {
-                        HStack {
-                            Text(service.name)
-                            Spacer()
-                            Text("Connected")
+        ZStack {
+            VStack {
+                if isLoading {
+                    ProgressView("Loading...")
+                } else {
+                    ScrollView {
+                        VStack(alignment: .leading) {
+                            Text("Connected Services")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .padding(.bottom, 10)
+
+                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
+                                ForEach(connectedServices, id: \.id) { service in
+                                    VStack {
+                                        Image(systemName: service.iconUrl) // Placeholder, remplacez-le par l'icône du service
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 40, height: 40)
+                                            .padding(.bottom, 10)
+                                        
+                                        Text(service.name)
+                                            .font(.headline)
+                                            .lineLimit(1)
+                                            .minimumScaleFactor(0.8)
+                                        
+                                        Button(action: {
+                                            unlinkService(service)
+                                        }) {
+                                            Text("Unlink")
+                                                .font(.subheadline)
+                                                .foregroundColor(.white)
+                                                .padding(.vertical, 5)
+                                                .padding(.horizontal, 10)
+                                                .background(Color.red)
+                                                .cornerRadius(10)
+                                        }
+                                    }
+                                    .padding()
+                                    .background(Color.green.opacity(0.2))
+                                    .cornerRadius(15)
+                                }
+                            }
+                            .padding(.horizontal)
+
+                            Text("Disconnected Services")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .padding(.top, 20)
+
+                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
+                                ForEach(disconnectedServices, id: \.id) { service in
+                                    VStack {
+                                        Image(systemName: service.iconUrl) // Placeholder, remplacez-le par l'icône du service
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 40, height: 40)
+                                            .padding(.bottom, 10)
+                                        
+                                        Text(service.name)
+                                            .font(.headline)
+                                            .lineLimit(1)
+                                            .minimumScaleFactor(0.8)
+                                        
+                                        Button(action: {
+                                            linkService(service)
+                                        }) {
+                                            Text("Connect")
+                                                .font(.subheadline)
+                                                .foregroundColor(.white)
+                                                .padding(.vertical, 5)
+                                                .padding(.horizontal, 10)
+                                                .background(Color.blue)
+                                                .cornerRadius(10)
+                                        }
+                                    }
+                                    .padding()
+                                    .background(Color.red.opacity(0.2))
+                                    .cornerRadius(15)
+                                }
+                            }
+                            .padding(.horizontal)
                         }
-                        .padding()
-                        .background(Color.green)
-                        .cornerRadius(10)
+                        .padding(.bottom, 90)
                     }
                 }
+            }
+            .onAppear {
+                fetchUserConnectionTokens()
+            }
+            .sheet(isPresented: $showSafari, onDismiss: {
+                authURL = nil
+                showSafari = false
+            }) {
+                if let url = authURL {
+                    SafariView(url: url)
+                        .onAppear {
+                            print("Opening Safari with URL: \(url)")
+                        }
+                }
+            }
+            
+            VStack {
+                Spacer()
                 
-                Text("Disconnected Services")
-                ForEach(disconnectedServices, id: \.id) { service in
-                    Button(action: {
-                        linkService(service)
-                    }) {
-                        HStack {
-                            Text(service.name)
-                            Spacer()
-                            Text("Connect")
-                        }
-                        .padding()
-                        .background(Color.red)
-                        .cornerRadius(10)
-                    }
-                }
+                CustomNavBar(selectedTab: $selectedTab, isPresentingCreateView: $isPresentingCreateView)
             }
+            .padding(.bottom, 0)
         }
-        .onAppear {
-            fetchUserConnectionTokens()
-        }
-        .sheet(isPresented: $showSafari, onDismiss: {
-            authURL = nil
-            showSafari = false
-        }) {
-            if let url = authURL {
-                SafariView(url: url)
-                    .onAppear {
-                        print("Opening Safari with URL: \(url)")
-                    }
-            }
-        }
+        .background(
+            (colorScheme == .dark ? Color(red: 28/255, green: 28/255, blue: 28/255) : Color(red: 242/255, green: 242/255, blue: 242/255))
+                .edgesIgnoringSafeArea(.all)
+        )
     }
 
     private func fetchUserConnectionTokens() {
@@ -173,5 +239,30 @@ struct ConnectedView: View {
         }
     }
     
+    private func unlinkService(_ service: Service_2) {
+        let token = KeychainHelper.getToken() ?? ""
+        let url = "https://area-development.tech/api/accounts/unlink/\(service.id)"
+        
+        let headers: HTTPHeaders = [
+            "Authorization": "Bearer \(token)"
+        ]
+        
+        AF.request(url, method: .post, headers: headers).responseJSON { response in
+            switch response.result {
+            case .success:
+                DispatchQueue.main.async {
+                    print(response)
+                    if let index = connectedServices.firstIndex(where: { $0.id == service.id }) {
+                        var disconnectedService = connectedServices.remove(at: index)
+                        disconnectedService.isConnected = false
+                        disconnectedServices.append(disconnectedService)
+                    }
+                }
+                print("Successfully unlinked from service: \(service.name)")
+                
+            case .failure(let error):
+                print("Failed to unlink service: \(error)")
+            }
+        }
+    }
 }
-

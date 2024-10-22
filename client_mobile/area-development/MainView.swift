@@ -28,7 +28,7 @@ struct MainView: View {
                         isPresentingCreateView: $isPresentingCreateView
                     )
                 } else {
-                    DashboardView(
+                    ConnectedView(
                         isUserLoggedIn: $isUserLoggedIn,
                         selectedTab: $selectedTab,
                         isPresentingCreateView: $isPresentingCreateView

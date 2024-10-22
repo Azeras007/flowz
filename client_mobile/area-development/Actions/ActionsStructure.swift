@@ -7,7 +7,6 @@ struct Action: Identifiable, Codable {
     var metadata: Metadata
     var created_at: String
     var updated_at: String
-    var can_return: String
 }
 
 struct Metadata: Codable {

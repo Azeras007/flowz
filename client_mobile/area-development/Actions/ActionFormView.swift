@@ -2,9 +2,12 @@ import SwiftUI
 
 struct ActionFormView: View {
     @State private var formData: [String: String] = [:]
+    @State private var activeField: String? = nil
     @State private var gotoConfirmation = false
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
+
+    var trigger = KeychainHelper.getTrigger()
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -37,14 +40,34 @@ struct ActionFormView: View {
                     if field.type == "text" {
                         TextField(field.label, text: Binding(
                             get: { formData[field.name] ?? "" },
-                            set: { formData[field.name] = $0 }
+                            set: {
+                                formData[field.name] = $0
+                                activeField = field.name
+                            }
                         ))
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                     }
                 }
+                
+                if let canReturn = trigger?.can_return, !canReturn.isEmpty {
+                    Section {
+                        ForEach(canReturn, id: \.self) { variable in
+                            Button(action: {
+                                updateActiveFieldWithVariable(variable: variable)
+                            }) {
+                                Text("Use \(variable)")
+                                    .padding()
+                                    .frame(maxWidth: .infinity)
+                                    .background(Color.blue)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(10)
+                            }
+                        }
+                    }
+                }
             }
             .padding(.horizontal)
-            
+
             Button(action: {
                 saveFormData()
                 gotoConfirmation = true
@@ -59,19 +82,24 @@ struct ActionFormView: View {
             }
             .padding(.horizontal)
             .padding(.top, 20)
-            
-            
+
             NavigationLink(destination: ConfirmationCreateAreaView(), isActive: $gotoConfirmation) {
                 EmptyView()
             }
-            
+
             Spacer()
         }
         .padding()
     }
+
+    func updateActiveFieldWithVariable(variable: String) {
+        if let activeField = activeField {
+            let currentText = formData[activeField] ?? ""
+            formData[activeField] = "\(currentText) $(\(variable))"
+        }
+    }
     
     func saveFormData() {
-        
         let formDatasaved = FormData(fields: formData)
         KeychainHelper.deleteSavedFormDataAction()
         KeychainHelper.savedFormDataAction(formDatasaved)

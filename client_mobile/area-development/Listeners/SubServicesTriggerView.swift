@@ -99,6 +99,7 @@ struct SubServicesTriggerView: View {
     func fetchSubServices() {
         AppSelectionView.fetchSubServices { fetchedSubServices in
             DispatchQueue.main.async {
+                KeychainHelper.deleteTrigger()
                 self.subServices = fetchedSubServices
                 self.isLoading = false
             }
