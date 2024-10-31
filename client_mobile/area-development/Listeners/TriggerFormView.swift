@@ -7,6 +7,8 @@ struct TriggerFormView: View {
     @State private var name: String = ""
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
+    @Binding var isPresentingCreateView: Bool
+
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -63,7 +65,7 @@ struct TriggerFormView: View {
                     .cornerRadius(10)
             }
             
-            NavigationLink(destination: SubServicesActionsView(), isActive: $shouldNavigate) {
+            NavigationLink(destination: SubServicesActionsView(isPresentingCreateView: $isPresentingCreateView), isActive: $shouldNavigate) {
                 EmptyView()
             }
             Spacer()

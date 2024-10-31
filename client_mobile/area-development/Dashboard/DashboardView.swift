@@ -65,6 +65,9 @@ struct DashboardView: View {
                 fetchAreas()
                 fetchConnectedServices()
             }
+            .sheet(isPresented: $isPresentingCreateView) {
+                CreateView(isPresentingCreateView: $isPresentingCreateView)
+            }
         }
     }
 

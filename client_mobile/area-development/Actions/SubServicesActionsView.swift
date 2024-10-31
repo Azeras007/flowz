@@ -7,6 +7,7 @@ struct SubServicesActionsView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
     @FocusState private var isSearchFocused: Bool
+    @Binding var isPresentingCreateView: Bool
 
     var filteredServices: [SubService] {
         let lowercasedSearchText = searchText.lowercased()
@@ -80,7 +81,7 @@ struct SubServicesActionsView: View {
                 } else {
                     LazyVGrid(columns: [GridItem(.flexible(), spacing: 20), GridItem(.flexible())], spacing: 20) {
                         ForEach(filteredServices) { service in
-                            NavigationLink(destination: ActionsSelectionView(subService: service)) {
+                            NavigationLink(destination: ActionsSelectionView(subService: service, isPresentingCreateView: $isPresentingCreateView)) {
                                 VStack {
                                     AsyncImage(url: URL(string: service.icon_url)) { image in
                                         image.resizable()

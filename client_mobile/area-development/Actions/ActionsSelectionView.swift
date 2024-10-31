@@ -7,6 +7,8 @@ struct ActionsSelectionView: View {
     @State private var isLoading = true
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
+    @Binding var isPresentingCreateView: Bool
+
 
     var body: some View {
         VStack {
@@ -71,7 +73,7 @@ struct ActionsSelectionView: View {
                 } else {
                     LazyVGrid(columns: [GridItem(.flexible())], spacing: 20) {
                         ForEach(KeychainHelper.getActions()!) { action in
-                            NavigationLink(destination: ActionFormView()) {
+                            NavigationLink(destination: ActionFormView(isPresentingCreateView: $isPresentingCreateView)) {
                                 RoundedRectangle(cornerRadius: 12)
                                     .fill(Color.yellow)
                                     .shadow(radius: 2)

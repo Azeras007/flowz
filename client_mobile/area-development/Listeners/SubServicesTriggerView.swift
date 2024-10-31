@@ -7,6 +7,8 @@ struct SubServicesTriggerView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
     @FocusState private var isSearchFocused: Bool
+    @Binding var isPresentingCreateView: Bool
+
 
     var filteredServices: [SubService] {
         let lowercasedSearchText: String = searchText.lowercased()
@@ -80,7 +82,9 @@ struct SubServicesTriggerView: View {
                 } else {
                     LazyVGrid(columns: [GridItem(.flexible(), spacing: 20), GridItem(.flexible(), spacing: 20)], spacing: 20) {
                         ForEach(filteredServices) { subService in
-                            SubServiceGridItem(subService: subService)
+                            NavigationLink(destination: TriggerSelectionView(subService: subService, isPresentingCreateView: $isPresentingCreateView)) {
+                                SubServiceGridItem(subService: subService, isPresentingCreateView: $isPresentingCreateView)
+                            }
                         }
                     }
                     .padding(.horizontal, 20)
@@ -110,9 +114,10 @@ struct SubServicesTriggerView: View {
 struct SubServiceGridItem: View {
     @Environment(\.colorScheme) var colorScheme
     var subService: SubService
+    @Binding var isPresentingCreateView: Bool
 
     var body: some View {
-        NavigationLink(destination: TriggerSelectionView(subService: subService)) {
+        NavigationLink(destination: TriggerSelectionView(subService: subService, isPresentingCreateView: $isPresentingCreateView)) {
             VStack {
                 AsyncImage(url: URL(string: subService.icon_url)) { image in
                     image.resizable()

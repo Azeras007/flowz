@@ -1,13 +1,12 @@
 import SwiftUI
 
-struct ConfirmationCreateAreaView: View{
+struct ConfirmationCreateAreaView: View {
     @State private var nameArea = ""
-    @State private var isUserLoggedIn: Bool = true
-    @State private var navigateToMainView = false
-    
+    @Environment(\.dismiss) var dismiss
+    @Binding var isPresentingCreateView: Bool
+
     var body: some View {
         VStack {
-            
             Form {
                 TextField("Name", text: $nameArea)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -15,32 +14,29 @@ struct ConfirmationCreateAreaView: View{
                         KeychainHelper.saveNameArea(newValue)
                     }
             }
-            
+
             Spacer()
-            
+
             HStack {
                 Button(action: {
-                    navigateToMainView = true
+                    dismiss()
                 }) {
                     Text("Cancel")
                         .padding()
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(PlainButtonStyle())
-                
+
                 Button(action: {
                     createArea()
-                    print("reussi")
-                    navigateToMainView = true
+                    print("Successfully created AREA")
+                    isPresentingCreateView = false
                 }) {
                     Text("Create")
                         .padding()
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(PlainButtonStyle())
-            }
-            NavigationLink(destination: MainView(isUserLoggedIn: $isUserLoggedIn), isActive: $navigateToMainView) {
-                EmptyView()
             }
         }
     }

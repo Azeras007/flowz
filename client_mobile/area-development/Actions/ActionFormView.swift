@@ -6,6 +6,7 @@ struct ActionFormView: View {
     @State private var gotoConfirmation = false
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
+    @Binding var isPresentingCreateView: Bool
 
     var trigger = KeychainHelper.getTrigger()
     
@@ -83,7 +84,7 @@ struct ActionFormView: View {
             .padding(.horizontal)
             .padding(.top, 20)
 
-            NavigationLink(destination: ConfirmationCreateAreaView(), isActive: $gotoConfirmation) {
+            NavigationLink(destination: ConfirmationCreateAreaView(isPresentingCreateView: $isPresentingCreateView), isActive: $gotoConfirmation) {
                 EmptyView()
             }
 

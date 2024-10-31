@@ -39,7 +39,7 @@ struct MainView: View {
                 areaLogsView
             }
             .fullScreenCover(isPresented: $isPresentingCreateView) {
-                CreateView()
+                CreateView(isPresentingCreateView: $isPresentingCreateView)
             }
         }
     }

@@ -3,6 +3,7 @@ import SwiftUI
 struct CreateView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
+    @Binding var isPresentingCreateView: Bool
 
     var body: some View {
         NavigationView {
@@ -16,7 +17,7 @@ struct CreateView: View {
 
                     HStack {
                         Button(action: {
-                            presentationMode.wrappedValue.dismiss()
+                            isPresentingCreateView = false
                         }) {
                             Image(systemName: "xmark")
                                 .resizable()
@@ -45,7 +46,7 @@ struct CreateView: View {
 
                             Spacer()
 
-                            NavigationLink(destination: SubServicesTriggerView()) {
+                            NavigationLink(destination: SubServicesTriggerView(isPresentingCreateView: $isPresentingCreateView)) {
                                 Text("Add")
                                     .font(.title3)
                                     .fontWeight(.bold)
@@ -101,9 +102,9 @@ struct CreateView: View {
 struct CreateView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            CreateView()
+            CreateView(isPresentingCreateView: .constant(true))
                 .preferredColorScheme(.light)
-            CreateView()
+            CreateView(isPresentingCreateView: .constant(true))
                 .preferredColorScheme(.dark)
         }
     }

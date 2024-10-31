@@ -7,6 +7,8 @@ struct TriggerSelectionView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
     var subService: SubService
+    @Binding var isPresentingCreateView: Bool
+
 
     var body: some View {
         VStack {
@@ -71,7 +73,7 @@ struct TriggerSelectionView: View {
                 } else {
                     LazyVGrid(columns: [GridItem(.flexible())], spacing: 20) {
                         ForEach(KeychainHelper.getTriggers()!) { trigger in
-                            NavigationLink(destination: TriggerFormView()) {
+                            NavigationLink(destination: TriggerFormView(isPresentingCreateView: $isPresentingCreateView)) {
                                 RoundedRectangle(cornerRadius: 12)
                                     .fill(Color.yellow)
                                     .shadow(radius: 2)
