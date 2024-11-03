@@ -11,6 +11,9 @@ struct AreaLogsView: View, Hashable {
         hasher.combine(area.id)
     }
 
+    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.colorScheme) var colorScheme
+
     @State private var logs: [Log] = []
     @State private var isLoading = true
     @State private var currentPage = 1
@@ -20,77 +23,83 @@ struct AreaLogsView: View, Hashable {
     
     var body: some View {
         VStack {
-            Text("Logs for \(area.name)")
+            Text("\(area.name)")
                 .font(.largeTitle)
                 .fontWeight(.bold)
                 .padding(.top, 20)
             Spacer()
             
             HStack {
-                
                 Button(action: {
                     area.status.toggle()
                     statusArea(areaId: area.id)
-                    fetchAreasID()
                 }) {
-                    Text(area.status ? "🟢" : "🔴")
-                        .font(.largeTitle)
-                        .foregroundColor(area.status ? .green : .red)
+                    Text(area.status ? "Connected" : "Disconnected")
+                        .foregroundColor(.white)
                 }
-            
-            
-            Button(action: {
-                activateTrigger(areaId: area.id)
-            }) {
-                Text("⚡")
-                    .font(.largeTitle)
-                    .foregroundColor(.yellow)
+                .buttonStyle(ToggleButtonStyle(isActive: area.status))
+
+                Button(action: {
+                    activateTrigger(areaId: area.id)
+                }) {
+                    Image(systemName: "bolt.fill")
+                        .resizable()
+                        .foregroundColor(.yellow)
+                        .frame(width: 20, height: 30)
+                }
+                .buttonStyle(PlainButtonStyle())
             }
-            .buttonStyle(PlainButtonStyle())
-            Button(action: {
-                deleteArea(areaId: area.id)
-            }) {
-                Image(systemName: "trash")
-                    .foregroundColor(.red)
-            }
-            .buttonStyle(PlainButtonStyle())
-        }
-        Spacer()
-        if isLoading && logs.isEmpty {
-            ProgressView("Loading logs...")
-                .padding(.top, 20)
-        } else {
-            ScrollView {
-                LazyVStack(spacing: 20) {
-                    ForEach(logs) { log in
-                        LogItemView(log: log)
-                    }
-                    
-                    if isLoading {
-                        ProgressView("Loading more logs...")
-                            .padding(.vertical, 20)
-                    } else if currentPage < lastPage {
-                        Button(action: {
-                            loadMoreLogs()
-                        }) {
-                            Text("Load more logs")
-                                .padding()
-                                .background(Color.blue)
-                                .foregroundColor(.white)
-                                .cornerRadius(10)
+            Spacer()
+            if isLoading && logs.isEmpty {
+                ProgressView("Loading logs...")
+                    .padding(.top, 20)
+            } else {
+                ScrollView {
+                    LazyVStack(spacing: 20) {
+                        ForEach(logs) { log in
+                            LogItemView(log: log)
+                        }
+                        
+                        if isLoading {
+                            ProgressView("Loading more logs...")
+                                .padding(.vertical, 20)
+                        } else if currentPage < lastPage {
+                            Button(action: {
+                                loadMoreLogs()
+                            }) {
+                                Text("Load more logs")
+                                    .padding()
+                                    .background(Color.blue)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(10)
+                            }
                         }
                     }
+                    .padding(.horizontal, 20)
                 }
-                .padding(.horizontal, 20)
             }
+            Spacer()
         }
-        Spacer()
-    }
+        .navigationBarBackButtonHidden(true)
+        .navigationBarItems(
+            leading: Button(action: {
+                self.presentationMode.wrappedValue.dismiss()
+            }) {
+                Image(systemName: "arrowtriangle.left.fill")
+                    .foregroundColor(colorScheme == .dark ? .white : .black)
+            },
+            trailing: Button(action: {
+                deleteArea(areaId: area.id)
+            }) {
+                Image(systemName: "trash.fill")
+                    .foregroundColor(colorScheme == .dark ? .white : .black)
+            }
+        )
         .onAppear {
             fetchAreasID()
             fetchLogs(areaId: area.id, page: currentPage)
         }
-}
+    }
 
 func fetchLogs(areaId: Int, page: Int) {
     let token = KeychainHelper.getToken() ?? ""
@@ -207,31 +216,39 @@ func fetchAreasID() {
     }
 }
 
-func statusArea(areaId: Int) {
-    let token = KeychainHelper.getToken() ?? ""
-    let headers: HTTPHeaders = [
-        "Authorization": "Bearer \(token)",
-        "Accept": "application/json"
-    ]
-    let url = "https://area-development.tech/api/areas/\(areaId)/status"
-    AF.request(url, method: .post, encoding: JSONEncoding.default, headers: headers).responseJSON { response in
-        switch response.result {
-        case .success(let data):
-            print("Status changed successfully for area \(areaId): \(data)")
-        case .failure(let error):
-            print("Failed to activate trigger: \(error)")
-            if let data = response.data, let rawString = String(data: data, encoding: .utf8) {
-                print("Raw server response: \(rawString)")
+    func statusArea(areaId: Int) {
+        let token = KeychainHelper.getToken() ?? ""
+        let headers: HTTPHeaders = [
+            "Authorization": "Bearer \(token)",
+            "Accept": "application/json"
+        ]
+        let url = "https://area-development.tech/api/areas/\(areaId)/status"
+        AF.request(url, method: .post, encoding: JSONEncoding.default, headers: headers).responseJSON { response in
+            switch response.result {
+            case .success(let data):
+                print("Status changed successfully for area \(areaId): \(data)")
+                fetchAreasID()
+            case .failure(let error):
+                print("Failed to change status: \(error)")
+                if let data = response.data, let rawString = String(data: data, encoding: .utf8) {
+                    print("Raw server response: \(rawString)")
+                }
+                DispatchQueue.main.async {
+                    self.area.status.toggle()
+                }
             }
         }
     }
-}
+
 
 }
+
+import SwiftUI
 
 struct LogItemView: View {
     var log: Log
-    
+    @Environment(\.colorScheme) var colorScheme
+
     var body: some View {
         VStack(alignment: .leading) {
             Text("Status: \(log.status)")
@@ -246,9 +263,13 @@ struct LogItemView: View {
                 .foregroundColor(.gray)
         }
         .padding(10)
-        .background(Color.white)
+        .background(logBackgroundColor)
         .cornerRadius(12)
         .shadow(radius: 4)
+    }
+    
+    private var logBackgroundColor: Color {
+        colorScheme == .dark ? Color.gray.opacity(0.2) : Color.white
     }
     
     func formatDate(_ dateString: String) -> String {

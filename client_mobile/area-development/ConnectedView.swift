@@ -156,7 +156,7 @@ struct ConnectedView: View {
             }
         }
         .background(
-            (colorScheme == .dark ? Color.black : Color.white)
+            backgroundColor
                 .edgesIgnoringSafeArea(.all)
         )
         .onAppear {
@@ -178,6 +178,11 @@ struct ConnectedView: View {
             CustomNavBar(selectedTab: $selectedTab, isPresentingCreateView: $isPresentingCreateView)
         }
         .padding(.bottom, 0)
+    }
+    private var backgroundColor: Color {
+        colorScheme == .dark
+            ? Color(red: 28 / 255, green: 28 / 255, blue: 28 / 255)
+            : Color(red: 242 / 255, green: 242 / 255, blue: 242 / 255)
     }
 
     private func fetchUserConnectionTokens() {

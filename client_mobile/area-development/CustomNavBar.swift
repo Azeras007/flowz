@@ -40,14 +40,14 @@ struct WavyShape: Shape {
 struct CustomNavBar: View {
     @Binding var selectedTab: String
     @Binding var isPresentingCreateView: Bool
-    @Environment(\.colorScheme) var colorScheme 
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         ZStack(alignment: .bottom) {
             WavyShape(waveHeight: 110, waveWidthOffset: 55, controlPointFactor: 0.9)
                 .fill(colorScheme == .dark ? Color(red: 28/255, green: 28/255, blue: 28/255) : Color(UIColor.systemBackground))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 40)
+                    WavyShape(waveHeight: 110, waveWidthOffset: 55, controlPointFactor: 0.9)
                         .stroke(Color.white, lineWidth: 1)
                         .opacity(colorScheme == .dark ? 1 : 0)
                 )

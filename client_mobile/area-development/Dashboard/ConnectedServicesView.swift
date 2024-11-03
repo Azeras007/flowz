@@ -79,7 +79,7 @@ struct ConnectedServicesView: View {
                 Circle()
                     .trim(from: 0.0, to: chartRatio)
                     .stroke(style: StrokeStyle(lineWidth: 20, lineCap: .round, lineJoin: .round))
-                    .foregroundColor(Color.yellow) 
+                    .foregroundColor(Color.yellow)
                     .rotationEffect(Angle(degrees: -90))
                     .animation(.easeInOut(duration: 1.0), value: chartRatio)
 
@@ -103,7 +103,7 @@ struct ConnectedServicesView: View {
 
     private var progressBarBackground: Color {
         colorScheme == .dark
-            ? Color(red: 28 / 255, green: 28 / 255, blue: 28 / 255)
+            ? Color(red: 100 / 255, green: 100 / 255, blue: 100 / 255)
             : Color(red: 242 / 255, green: 242 / 255, blue: 242 / 255)
     }
 
@@ -121,7 +121,7 @@ struct ConnectedServicesView: View {
 
     private var circleBackgroundColor: Color {
         colorScheme == .dark
-            ? Color(red: 28 / 255, green: 28 / 255, blue: 28 / 255)
+            ? Color(red: 100 / 255, green: 100 / 255, blue: 100 / 255)
             : Color(red: 242 / 255, green: 242 / 255, blue: 242 / 255)
     }
 
@@ -131,4 +131,3 @@ struct ConnectedServicesView: View {
             : Color.black
     }
 }
-

@@ -88,7 +88,7 @@ struct StatisticsView: View {
 
     private var progressBarBackground: Color {
         colorScheme == .dark
-            ? Color(red: 28 / 255, green: 28 / 255, blue: 28 / 255)
+            ? Color(red: 100 / 255, green: 100 / 255, blue: 100 / 255)
             : Color(red: 242 / 255, green: 242 / 255, blue: 242 / 255)
     }
 
@@ -116,13 +116,13 @@ struct StatisticsView: View {
 
     private var circleBackgroundColor: Color {
         colorScheme == .dark
-            ? Color(red: 28 / 255, green: 28 / 255, blue: 28 / 255)
+            ? Color(red: 100 / 255, green: 100 / 255, blue: 100 / 255)
             : Color(red: 242 / 255, green: 242 / 255, blue: 242 / 255)
     }
 
     private var circleForegroundColor: Color {
         colorScheme == .dark
-            ? Color(red: 242 / 255, green: 242 / 255, blue: 242 / 255)
-            : Color(red: 28 / 255, green: 28 / 255, blue: 28 / 255)
+            ? Color.white
+            : Color.black
     }
 }
